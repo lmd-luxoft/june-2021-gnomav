@@ -1,121 +1,164 @@
-# Copyright 2019 by Kirill Kanin.
-# All rights reserved.
-
+#!/usr/bin/env python2
 import argparse
+import json
 import os
 import sys
-import logging
-import json
-from aiohttp import web
-from server.handler import Handler
-#from server.database import DataBase
-from server.file_service import FileService, FileServiceSigned
-import server.file_service_no_class as FileServiceNoClass
+
+import server.FileService as FileService
+
+def commandline_parser():
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        '-d', '--dir', default=os.path.join(os.getcwd()),
+        help="working directory (default: dir)")
+
+    parser.add_argument('-f','--filename', help='File Name (default: filename)')
+
+    return parser
 
 
-def commandline_parser() -> argparse.ArgumentParser:
-    """Command line parser.
+def command_change_dir():
 
-    Parse port and working directory parameters from command line.
+    dir_mame = raw_input('Where we are going to: ')
+    return FileService.change_dir(dir_mame)
 
-    """
+def command_get_files():
 
-    pass
+    quest1 = raw_input('We stay here (print : 1) or change location (print : 2): ')
 
+    if quest1 == '1':
+        dir_name = os.getcwd()
 
-def get_file_data(path):
-    """Get full info about file.
+    elif quest1 == '2':
+        dir_name = raw_input('Where we are going to: ')
 
-    Args:
-        path (str): Working directory path.
+    else:
+        print('Ok, I decide to stay here : ' + os.getcwd())
+        dir_name = os.getcwd()
 
-    Returns:
-        Dict, which contains full info about file. Keys:
-            name (str): name of file with .txt extension.
-            content (str): file content.
-            create_date (str): date of file creation.
-            edit_date (str): date of last file modification.
-            size (int): size of file in bytes.
-
-    Raises:
-        AssertionError: if file does not exist, filename format is invalid,
-        ValueError: if security level is invalid.
-
-    """
-
-    pass
+    return FileService.get_files(dir_name)
 
 
-def create_file(path):
-    """Create new .txt file.
+def command_get_file_data():
 
-    Method generates name of file from random string with digits and latin letters.
+    quest1 = raw_input('We stay here (print : 1) or change location (print : 2): ')
 
-    Args:
-        path (str): Working directory path.
+    if quest1 == '1':
+        dir_name = os.getcwd()
 
-    Returns:
-        Dict, which contains name of created file. Keys:
-            name (str): name of file with .txt extension.
-            content (str): file content.
-            create_date (str): date of file creation.
-            size (int): size of file in bytes,
-            user_id (int): user Id.
+    elif quest1 == '2':
+        dir_name = raw_input('Where we are going to: ')
 
-    Raises:
-        AssertionError: if user_id is not set,
-        ValueError: if security level is invalid.
+    else:
+        print('Ok, I decide to stay here : ' + os.getcwd())
+        dir_name = os.getcwd()
 
-    """
+    file_name = raw_input('What file we are looking for: ')
 
-    pass
+    return FileService.get_file_data(dir_name, file_name)
 
 
-def delete_file(path):
-    """Delete file.
-
-    Args:
-        path (str): Working directory path.
-
-    Returns:
-        Str with filename with .txt file extension.
-
-    Raises:
-        AssertionError: if file does not exist.
-
-    """
-
-    pass
+def command_create_file():
 
 
-def change_dir(path):
-    """Change working directory.
+    quest1 = raw_input('We stay here (print : 1) or change location (print : 2): ')
 
-    Args:
-        path (str): Working directory path.
+    if quest1 == '1':
+        dir_name = os.getcwd()
 
-    Returns:
-        Str with successfully result.
+    elif quest1 == '2':
+        dir_name = raw_input('Where we are going to: ')
 
-    """
+    else:
+        print('Ok, I decide to stay here : ' + os.getcwd())
+        dir_name = os.getcwd()
 
-    pass
+    file_name = raw_input('Enter new file name: ')
+    file_format = raw_input('Enter new file extension: ')
+
+    return FileService.create_file(dir_name, file_name, file_format)
+
+
+def command_delete_file():
+
+    quest3 = raw_input('We stay here (print : 1) or change location (print : 2): ')
+
+    if quest3 == '1':
+        dir_mame = os.getcwd()
+
+    elif quest3 == '2':
+        dir_mame = raw_input('Where we are going to: ')
+
+    else:
+        print('Ok, I decide to stay here : ' + os.getcwd())
+        dir_mame = os.getcwd()
+
+    file_mame = raw_input('What file we are looking for: ')
+
+    return FileService.delete_file(dir_mame, file_mame)
+
+def command_help():
+    print("""The simple File manader 1.0
+Available commands:
+help  : show help
+chdir : change working directory
+list  : get list of files
+create: create a file with content
+get   : get a file data
+delete: delete a file
+exit  : exit from app
+""")
+
+def command_exit():
+    sys.exit(0)
 
 
 def main():
-    """Entry point of app.
 
-    Get and parse command line parameters and configure web app.
-    Command line options:
-    -p --port - port (default: 8080).
-    -f --folder - working directory (absolute or relative path, default: current app folder FileServer).
-    -i --init - initialize database.
-    -h --help - help.
+    parser  = commandline_parser()
+    target_params = parser.parse_args(sys.argv[1:])
+    path = target_params.dir
+    FileService.change_dir(path)
 
-    """
+    functions = {
+        'help': command_help,
+        'chdir': command_change_dir,
+        'list': command_get_files,
+        'create': command_create_file,
+        'get': command_get_file_data,
+        'delete': command_delete_file,
+        'exit': command_exit,
+    }
 
-    pass
+    command_help()
+
+    while True:
+        try:
+
+            command = raw_input('Input command: ')
+
+            def cmd_unknown():
+                print("Unknown command: {}".format(command))
+
+            result = functions.get(command, cmd_unknown)()
+
+
+        except Exception as err:
+
+            print(err)
 
 
 if __name__ == '__main__':
     main()
+
+
+#[root@zvid-app-03 ~]# cd ../
+#[root@zvid-app-03 /]# alias python='/usr/bin/python2.7'
+#[root@zvid-app-03 /]# alias python3='/usr/bin/python3.6'
+#[root@zvid-app-03 /]# alias pip="/usr/bin/pip"
+#[root@zvid-app-03 /]# alias pip3="/usr/local/bin/pip3"
+#[root@zvid-app-03 /]# source venv2/bin/activate
+#cd /var/www/script-007-tasks-task02
+
