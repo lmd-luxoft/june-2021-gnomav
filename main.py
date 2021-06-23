@@ -14,15 +14,15 @@ def commandline_parser():
         '-d', '--dir', default=os.path.join(os.getcwd()),
         help="working directory (default: dir)")
 
-    parser.add_argument('-f','--filename', help='File Name (default: filename)')
+    parser.add_argument('-f', '--filename', help='File Name (default: filename)')
 
     return parser
 
 
 def command_change_dir():
 
-    dir_mame = raw_input('Where we are going to: ')
-    return FileService.change_dir(dir_mame)
+    dir_name = raw_input('Where we are going to: ')
+    return FileService.change_dir(dir_name)
 
 def command_get_files():
 
@@ -100,7 +100,7 @@ def command_delete_file():
     return FileService.delete_file(dir_mame, file_mame)
 
 def command_help():
-    print("""The simple File manader 1.0
+    print("""The simple File manager 1.0
 Available commands:
 help  : show help
 chdir : change working directory
@@ -154,11 +154,4 @@ if __name__ == '__main__':
     main()
 
 
-#[root@zvid-app-03 ~]# cd ../
-#[root@zvid-app-03 /]# alias python='/usr/bin/python2.7'
-#[root@zvid-app-03 /]# alias python3='/usr/bin/python3.6'
-#[root@zvid-app-03 /]# alias pip="/usr/bin/pip"
-#[root@zvid-app-03 /]# alias pip3="/usr/local/bin/pip3"
-#[root@zvid-app-03 /]# source venv2/bin/activate
-#cd /var/www/script-007-tasks-task02
 

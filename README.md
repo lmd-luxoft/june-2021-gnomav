@@ -1,7 +1,9 @@
 
 # File server project
 
-Author is Maxim Suslov.
+Project name is File Servere.
+
+Author is Olga Averina.
 
 ## Сделанные требования
 

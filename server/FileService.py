@@ -2,31 +2,39 @@
 import os, time, sys, stat
 from pathlib import Path
 
+def check_path(path):
+
+    if path.__contains__('.') or path.__contains__(' '):
+        return True
 
 def change_dir(path, autocreate=True):
 
-   if os.path.exists(path):
+   if not check_path(path):
 
-        if path <> os.getcwd():
+       if os.path.exists(path):
 
-            print('Current directory : ' + os.getcwd())
-            print("""Target directory : """ + path)
+           if path <> os.getcwd():
+               print('Current directory : ' + os.getcwd())
+               print("""Target directory : """ + path)
 
-        else:
-            print("""We are still here : """ + path)
+           else:
+               print("""We are still here : """ + path)
 
-        os.chdir(path)
+           os.chdir(path)
 
+       else:
+
+           if autocreate:
+
+               os.makedirs(path)
+               print("""Here are nour new location : """ + path)
+
+           else:
+
+               raise RuntimeError('Directory {} is not found'.format(path))
    else:
 
-        if autocreate:
-
-            os.makedirs(path)
-            print("""Here are nour new location : """ + path)
-
-        else:
-
-            raise RuntimeError('Directory {} is not found'.format(path))
+       raise ValueError('Check path format')
 
 
 def get_files(path):
@@ -77,7 +85,7 @@ def create_file(path, filename, format):
 
     full_filename = filename + "." + format
 
-    mode = 0777|stat.S_IRUSR
+    mode = 0o777 | stat.S_IRUSR
 
     if os.path.exists(full_filename):
         print('File ' + full_filename + ' already exists')
